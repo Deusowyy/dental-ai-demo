@@ -43,7 +43,7 @@ if "messages" not in st.session_state:
 user_input = st.chat_input("Type your message here...")
 
 if user_input:
-    #    if not is_safe(user_input):
+    if not is_safe(user_input):
         response = "I am a dental assistant and I cannot engage in that conversation. How can I help you with your dental needs?"
     else:
         st.session_state.messages.append({"role": "user", "content": user_input})
