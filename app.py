@@ -11,8 +11,7 @@ except:
 
 client = Groq(api_key=api_key)
 
-#def is_safe(text):
-    """Prosta warstwa bezpieczeństwa blokująca próby jailbreaka."""
+def is_safe(text):
     forbidden = ["system prompt", "ignore instructions", "forget all rules", "override"]
     if any(f in text.lower() for f in forbidden):
         return False
