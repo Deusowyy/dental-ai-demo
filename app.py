@@ -1,5 +1,5 @@
 import streamlit as st
-   from groq import Groq
+from groq import Groq
 
    # 1. Pobieranie klucza z bezpiecznego magazynu sekretów Streamlit Cloud
    # Kod "zgodnie ze sztuką" zakłada, że sekret jest bezpiecznie wstrzyknięty przez serwer.
