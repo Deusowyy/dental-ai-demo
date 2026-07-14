@@ -67,11 +67,3 @@ if user_input:
             
         except Exception as e:
             st.error(f"API Error: {e}")
-```
-
-### Ważna uwaga:
-Jeśli po wklejeniu tego na GitHubie nadal będzie błąd, zerknij na to w edytorze GitHuba:
-*   Wszystkie linie zaczynające się od `if`, `with`, `for`, `try` muszą mieć odpowiednie wcięcia (zazwyczaj 4 spacje).
-*   **W edytorze GitHuba wciśnij "Tab"** przed linią `try:` jeśli zobaczysz, że jest "za krótka" w stosunku do `with` linijkę wyżej.
-
-Zrób ten "clean paste", zapisz commit i daj znać – to musi zadziałać, bo kod jest teraz czysty jak łza. Jak to ruszy, od razu przechodzimy do Dnia 3: **Skrypt do pozyskiwania klientów**!
