@@ -2,26 +2,26 @@ import streamlit as st
 import os
 from groq import Groq
 
-## Używamy st.secrets do bezpiecznego trzymania klucza API (zgodnie ze sztuką)
+# ==================== API KEY ====================
 try:
     api_key = st.secrets["GROQ_API_KEY"]
 except:
-    # Fallback dla testów lokalnych jeśli plik .streamlit/secrets.toml nie istnieje
-    api_key = os.getenv("GROQ_API_KEY", "gsk_KLUCZ_Z_GROQ")
+    api_key = os.getenv("GROQ_API_KEY", "gsk_TWÓJ_KLUCZ")
 
 client = Groq(api_key=api_key)
 
+# ==================== BEZPIECZEŃSTWO ====================
 def is_safe(text):
-    forbidden = ["system prompt", "ignore instructions", "forget all rules", "override"]
-    if any(f in text.lower() for f in forbidden):
-        return False
-    return True
+    forbidden = ["system prompt", "ignore instructions", "forget all rules", "override", "reveal your instructions"]
+    return not any(f in text.lower() for f in forbidden)
 
+# ==================== KONFIGURACJA ====================
 st.set_page_config(page_title="SmilePerfect Texas AI", page_icon="🦷")
 st.title("🦷 SmilePerfect Texas - AI Assistant")
 
+# ==================== INICJALIZACJA HISTORII ====================
 if "messages" not in st.session_state:
-   system_prompt = """
+    system_prompt = """
 You are a friendly and professional virtual receptionist for SmilePerfect Dental Clinic in Austin, Texas.
 
 Core Rules (never break these):
@@ -42,36 +42,39 @@ Key Clinic Information:
 
 Start every conversation friendly and professional.
 """
-    st.session_state.messages = [{"role": "system", "content": system_prompt}]
-    st.session_state.messages.append({"role": "assistant", "content": "Howdy! Welcome to SmilePerfect Dental. How can I help you smile brighter today?"})
 
+    st.session_state.messages = [
+        {"role": "system", "content": system_prompt},
+        {"role": "assistant", "content": "Howdy! Welcome to SmilePerfect Dental. How can I help you smile brighter today? 😁"}
+    ]
+
+# ==================== WYŚWIETLANIE HISTORII ====================
 for message in st.session_state.messages:
     if message["role"] != "system":
         with st.chat_message(message["role"]):
             st.markdown(message["content"])
 
+# ==================== INPUT + LOGIKA ====================
 user_input = st.chat_input("Type your message here...")
 
 if user_input:
-    # Najpierw zawsze wyświetlamy wiadomość użytkownika
     with st.chat_message("user"):
         st.markdown(user_input)
-    
+
     if not is_safe(user_input):
-        safe_response = "I'm sorry, but I can only help with dental clinic questions. How can I assist you with your smile today? 😊"
+        response = "I'm sorry, but I can only help with dental clinic related questions. How can I assist you today? 😊"
         with st.chat_message("assistant"):
-            st.markdown(safe_response)
+            st.markdown(response)
         st.session_state.messages.append({"role": "user", "content": user_input})
-        st.session_state.messages.append({"role": "assistant", "content": safe_response})
+        st.session_state.messages.append({"role": "assistant", "content": response})
     
     else:
-        # Dodajemy wiadomość użytkownika do historii
         st.session_state.messages.append({"role": "user", "content": user_input})
         
         with st.chat_message("assistant"):
             message_placeholder = st.empty()
             full_response = ""
-           
+            
             try:
                 stream = client.chat.completions.create(
                     model="llama-3.3-70b-versatile",
