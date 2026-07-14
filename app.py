@@ -17,7 +17,7 @@ def is_safe(text):
         return False
     return True
 
-#st.set_page_config(page_title="SmilePerfect Texas AI", page_icon="🦷")
+st.set_page_config(page_title="SmilePerfect Texas AI", page_icon="🦷")
 st.title("🦷 SmilePerfect Texas - AI Assistant")
 
 if "messages" not in st.session_state:
@@ -35,7 +35,7 @@ if "messages" not in st.session_state:
     st.session_state.messages = [{"role": "system", "content": system_prompt}]
     st.session_state.messages.append({"role": "assistant", "content": "Howdy! Welcome to SmilePerfect Dental. How can I help you smile brighter today?"})
 
-#for message in st.session_state.messages:
+for message in st.session_state.messages:
     if message["role"] != "system":
         with st.chat_message(message["role"]):
             st.markdown(message["content"])
