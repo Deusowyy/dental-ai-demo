@@ -53,17 +53,25 @@ for message in st.session_state.messages:
 user_input = st.chat_input("Type your message here...")
 
 if user_input:
+    # Najpierw zawsze wyświetlamy wiadomość użytkownika
+    with st.chat_message("user"):
+        st.markdown(user_input)
+    
     if not is_safe(user_input):
-        response = "I am a dental assistant and I cannot engage in that conversation. How can I help you with your dental needs?"
-    else:
+        safe_response = "I'm sorry, but I can only help with dental clinic questions. How can I assist you with your smile today? 😊"
+        with st.chat_message("assistant"):
+            st.markdown(safe_response)
         st.session_state.messages.append({"role": "user", "content": user_input})
-        with st.chat_message("user"):
-            st.markdown(user_input)
-
+        st.session_state.messages.append({"role": "assistant", "content": safe_response})
+    
+    else:
+        # Dodajemy wiadomość użytkownika do historii
+        st.session_state.messages.append({"role": "user", "content": user_input})
+        
         with st.chat_message("assistant"):
             message_placeholder = st.empty()
             full_response = ""
-            
+           
             try:
                 stream = client.chat.completions.create(
                     model="llama-3.3-70b-versatile",
@@ -77,5 +85,6 @@ if user_input:
                 
                 message_placeholder.markdown(full_response)
                 st.session_state.messages.append({"role": "assistant", "content": full_response})
+                
             except Exception as e:
                 st.error(f"API Error: {e}")
