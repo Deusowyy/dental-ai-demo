@@ -30,20 +30,24 @@ clinics = {
     }
 }
 
-# ==================== WYBÓR KLINIKI ====================
+# ==================== WYBÓR KLINIKI Z URL ====================
 st.set_page_config(page_title="Dental AI Demo", page_icon="🦷", layout="centered")
 
-st.title("🦷 Dental AI Assistant")
-st.caption("**Demo Version** — Powered by Groq + Llama 3.3")
+# Pobieramy parametry z paska adresu przeglądarki
+query_params = st.query_params
+clinic_name_from_url = query_params.get("clinic")
 
-# Sidebar - wybór kliniki
-st.sidebar.header("Wybierz klinikę demo")
-selected_clinic_name = st.sidebar.selectbox(
-    "Klinika:", 
-    options=list(clinics.keys())
-)
+# Jeśli link zawiera parametr (np. ?clinic=BrightSmile Dallas) i klinika istnieje w naszym słowniku:
+if clinic_name_from_url and clinic_name_from_url in clinics:
+    selected_clinic_name = clinic_name_from_url
+else:
+    # W przeciwnym razie ładujemy domyślną klinikę na start
+    selected_clinic_name = "SmilePerfect Austin"
 
 clinic = clinics[selected_clinic_name]
+
+st.title(f"🦷 {clinic['name']} - AI Assistant")
+st.caption("**Demo Version** — Powered by Groq + Llama 3.3")
 
 # ==================== API KEY ====================
 try:
@@ -57,7 +61,7 @@ if not api_key:
 
 client = Groq(api_key=api_key)
 
-# ==================== SYSTEM PROMPT (dynamiczny) ====================
+# ==================== SYSTEM PROMPT ====================
 def get_system_prompt(clinic):
     return f"""
 You are a friendly and professional virtual receptionist for {clinic['name']} located in {clinic['city']}.
@@ -81,15 +85,8 @@ Be helpful and always try to guide the user toward calling or booking an appoint
 """
 
 # ==================== INICJALIZACJA ====================
-if "messages" not in st.session_state or "current_clinic" not in st.session_state:
-    st.session_state.current_clinic = selected_clinic_name
-    st.session_state.messages = [
-        {"role": "system", "content": get_system_prompt(clinic)},
-        {"role": "assistant", "content": f"Howdy! Welcome to {clinic['name']}. How can I help you smile brighter today? 😁"}
-    ]
-
-# Zmiana kliniki → reset historii
-if st.session_state.current_clinic != selected_clinic_name:
+# Resetujemy stan, jeśli zmieniła się klinika w URL, lub ładujemy po raz pierwszy
+if "messages" not in st.session_state or st.session_state.get("current_clinic") != selected_clinic_name:
     st.session_state.current_clinic = selected_clinic_name
     st.session_state.messages = [
         {"role": "system", "content": get_system_prompt(clinic)},
@@ -109,6 +106,7 @@ if user_input:
     with st.chat_message("user"):
         st.markdown(user_input)
 
+    # Proste zabezpieczenie (Guardrail)
     if "ignore instructions" in user_input.lower() or "system prompt" in user_input.lower():
         response = "I'm sorry, but I can only help with questions about our dental clinic and services."
         with st.chat_message("assistant"):
