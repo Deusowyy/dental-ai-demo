@@ -10,7 +10,8 @@ clinics = {
         "address": "123 Longhorn Blvd, Austin, TX",
         "phone": "555-0199",
         "hours": "Monday-Friday, 8 AM - 5 PM",
-        "services": "General dentistry, teeth whitening ($150), implants, emergency extractions"
+        "services": "General dentistry, teeth whitening ($150), implants, emergency extractions",
+        "available_slots": "Tomorrow at 10:00 AM, Tomorrow at 2:00 PM, Next Monday at 9:00 AM"
     },
     "BrightSmile Dallas": {
         "name": "BrightSmile Clinic",
@@ -18,7 +19,8 @@ clinics = {
         "address": "456 Lone Star Drive, Dallas, TX",
         "phone": "555-0200",
         "hours": "Monday-Friday, 7:30 AM - 6 PM",
-        "services": "General dentistry, orthodontics, cosmetic dentistry, implants"
+        "services": "General dentistry, orthodontics, cosmetic dentistry, implants",
+        "available_slots": "Today at 4:00 PM, Tomorrow at 11:30 AM, Next Wednesday at 1:00 PM"
     },
     "Pearl Dental Houston": {
         "name": "Pearl Dental Center",
@@ -26,22 +28,20 @@ clinics = {
         "address": "789 Gulf Freeway, Houston, TX",
         "phone": "555-0201",
         "hours": "Monday-Saturday, 8 AM - 5 PM",
-        "services": "General dentistry, pediatrics, whitening, emergency care"
+        "services": "General dentistry, pediatrics, whitening, emergency care",
+        "available_slots": "Next Tuesday at 8:00 AM, Next Thursday at 3:00 PM"
     }
 }
 
 # ==================== WYBÓR KLINIKI Z URL ====================
 st.set_page_config(page_title="Dental AI Demo", page_icon="🦷", layout="centered")
 
-# Pobieramy parametry z paska adresu przeglądarki
 query_params = st.query_params
 clinic_name_from_url = query_params.get("clinic")
 
-# Jeśli link zawiera parametr (np. ?clinic=BrightSmile Dallas) i klinika istnieje w naszym słowniku:
 if clinic_name_from_url and clinic_name_from_url in clinics:
     selected_clinic_name = clinic_name_from_url
 else:
-    # W przeciwnym razie ładujemy domyślną klinikę na start
     selected_clinic_name = "SmilePerfect Austin"
 
 clinic = clinics[selected_clinic_name]
@@ -72,7 +72,12 @@ Core Rules (never break these):
 - NEVER offer to search for external resources or other clinics.
 - Keep responses short, polite, and helpful (max 3-4 sentences).
 - ALWAYS reply in English.
-- Your goal is to answer basic questions and encourage booking an appointment.
+
+Booking Rules (CRITICAL):
+- You CANNOT make actual reservations in the system.
+- If a patient wants to book, offer them one of these available slots: {clinic['available_slots']}.
+- Once they choose a slot, tell them you need their phone number or email to secure the time. 
+- After they provide contact info, say: "Thank you! Our human reception team will reach out shortly to confirm your {clinic['name']} appointment."
 
 Clinic Information:
 - Name: {clinic['name']}
@@ -80,12 +85,9 @@ Clinic Information:
 - Hours: {clinic['hours']}
 - Phone: {clinic['phone']}
 - Services: {clinic['services']}
-
-Be helpful and always try to guide the user toward calling or booking an appointment.
 """
 
 # ==================== INICJALIZACJA ====================
-# Resetujemy stan, jeśli zmieniła się klinika w URL, lub ładujemy po raz pierwszy
 if "messages" not in st.session_state or st.session_state.get("current_clinic") != selected_clinic_name:
     st.session_state.current_clinic = selected_clinic_name
     st.session_state.messages = [
