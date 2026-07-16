@@ -5,31 +5,31 @@ from groq import Groq
 
 # ==================== KONFIGURACJA KLINIK ====================
 clinics = {
-    "SmilePerfect Austin": {
-        "name": "SmilePerfect Dental",
+    "The Dental Centre": {
+        "name": "The Dental Centre",
         "city": "Austin, Texas",
-        "address": "123 Longhorn Blvd, Austin, TX",
-        "phone": "555-0199",
+        "address": "4301 W William Cannon Dr, Austin, TX 78749",
+        "phone": "(512) 892-7800",
         "hours": "Monday-Friday, 8 AM - 5 PM",
-        "services": "General dentistry, teeth whitening ($150), implants, emergency extractions",
-        "available_slots": "Tomorrow at 10:00 AM, Tomorrow at 2:00 PM, Next Monday at 9:00 AM"
+        "services": "General dentistry, Emergency dental care, Implants, Zoom Whitening Bundle (15% off / $475 value)",
+        "available_slots": "Tomorrow at 10:30 AM, Tomorrow at 3:00 PM, Next Monday at 9:00 AM"
     },
-    "BrightSmile Dallas": {
-        "name": "BrightSmile Clinic",
-        "city": "Dallas, Texas",
-        "address": "456 Lone Star Drive, Dallas, TX",
-        "phone": "555-0200",
-        "hours": "Monday-Friday, 7:30 AM - 6 PM",
-        "services": "General dentistry, orthodontics, cosmetic dentistry, implants",
+    "Antoine Dental Center": {
+        "name": "Antoine Dental Center",
+        "city": "Houston, Texas",
+        "address": "Houston, TX",
+        "phone": "(713) 691-8880",
+        "hours": "Monday-Friday, 8 AM - 5 PM (Flexible hours)",
+        "services": "General dentistry, Implants, Braces, Orthodontics, Cleaning packages, Same-day emergency appointments",
         "available_slots": "Today at 4:00 PM, Tomorrow at 11:30 AM, Next Wednesday at 1:00 PM"
     },
-    "Pearl Dental Houston": {
-        "name": "Pearl Dental Center",
-        "city": "Houston, Texas",
-        "address": "789 Gulf Freeway, Houston, TX",
-        "phone": "555-0201",
-        "hours": "Monday-Saturday, 8 AM - 5 PM",
-        "services": "General dentistry, pediatrics, whitening, emergency care",
+    "Austin Dental Co": {
+        "name": "Austin Dental Co",
+        "city": "Austin, Texas",
+        "address": "Austin, TX",
+        "phone": "(512) 710-4783",
+        "hours": "Monday-Friday, 8 AM - 5 PM",
+        "services": "General dentistry, Preventative care, Restorative dentistry, Cosmetic dentistry",
         "available_slots": "Next Tuesday at 8:00 AM, Next Thursday at 3:00 PM"
     }
 }
@@ -43,7 +43,7 @@ clinic_name_from_url = query_params.get("clinic")
 if clinic_name_from_url and clinic_name_from_url in clinics:
     selected_clinic_name = clinic_name_from_url
 else:
-    selected_clinic_name = "SmilePerfect Austin"
+    selected_clinic_name = "The Dental Centre" # Domyślna, jeśli link był bez parametru
 
 clinic = clinics[selected_clinic_name]
 
@@ -64,7 +64,6 @@ client = Groq(api_key=api_key)
 
 # ==================== SYSTEM PROMPT ====================
 def get_system_prompt(clinic):
-    # Pobieramy dzisiejszą datę w ładnym formacie (np. Thursday, July 16, 2026)
     current_date = datetime.now().strftime("%A, %B %d, %Y")
     
     return f"""
